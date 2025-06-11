@@ -1,0 +1,4 @@
+correlations = abs(df.corr())
+
+# Identify top 5 features, excluding y itself, that correlate strongly with y.
+top_5_features = correlations["y"].sort_values(ascending=False)[1:6].index

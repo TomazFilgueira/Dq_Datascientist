@@ -1,0 +1,11 @@
+banned,money_in_pocket,adult,entrance
+FALSE,65,TRUE,Allowed
+FALSE,35,TRUE,Denied
+FALSE,40,FALSE,Denied
+FALSE,60,FALSE,Denied
+TRUE,60,TRUE,Denied
+TRUE,35,TRUE,Denied
+FALSE,60,TRUE,Allowed
+FALSE,60,TRUE,Allowed
+FALSE,65,TRUE,Allowed
+FALSE,40,TRUE,Denied
