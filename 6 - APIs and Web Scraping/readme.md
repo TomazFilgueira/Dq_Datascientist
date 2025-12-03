@@ -83,6 +83,8 @@ Below is the detailed schema of the dataset used in this project.
 | **ticker** | Stock ticker for the primary listing. | `string` |
 | **exchange**
 
+</details>
+
 ## 2.2📡 Methodology: API Interaction
 
 To ensure precise data extraction, this project interacts with the `MER/F1` endpoint using specific filter parameters.
@@ -103,7 +105,109 @@ Key parameters used to filter the huge dataset included:
 ### ⚡ Performance & Rate Limits
 To ensure the stability of the extraction process, the script adheres to Nasdaq's API rate limits for authenticated users.
 
-* **Constraint:** The script is designed to handle the limit of **2,000 calls per 10 minutes** (standard for free authenticated accounts).
-* **Optimization:** By using the `.json` format and filtering columns (`qopts.columns`), we reduce the bandwidth and processing time for each request.
+## 💻 Implementation Details
 
-> **Note:** If you are running this without an API Key (anonymous mode), the limit drops drastically to 20 calls per 10 minutes. Using the `config.py` setup is highly recommended.
+### 1. Data Extraction Pipeline
+The project utilizes the `requests` library to fetch data from the Nasdaq API. The raw response is processed in JSON format to allow for granular inspection before conversion to a DataFrame.
+
+### 2. JSON Structure Analysis
+Understanding the raw data structure was critical for correct parsing. The Nasdaq API response returns a nested dictionary with two primary keys:
+
+1.  **`meta`**: Contains pagination information (e.g., `next_cursor_id`), essential for iterating through large datasets.
+2.  **`datatable`**: Contains the actual financial data, split into two lists:
+    * **`columns`**: Defines the schema (name and data type of each column).
+    * **`data`**: A list of lists containing the actual values.
+
+**Sample JSON Structure:**
+To map the data correctly, we identified that the `data` list corresponds positionally to the `columns` list:
+
+```json
+{
+    "datatable": {
+        "data": [
+            [2438, 1868192544, -1802, 10.48, "2011-06-30", "Q2", ...]
+        ],
+        "columns": [
+            {"name": "compnumber", "type": "Integer"},
+            {"name": "reportid", "type": "Integer"},
+            {"name": "mapcode", "type": "Integer"},
+            {"name": "amount", "type": "BigDecimal(36,14)"},
+            {"name": "reportdate", "type": "Date"}
+        ]
+    },
+    "meta": {
+        "next_cursor_id": "mzS2..."
+    }
+}
+
+```
+
+## 🐼 Data Processing & Feature Selection
+
+### 1. Conversion to DataFrame
+Once the JSON data is retrieved, the project converts the nested dictionary structure into a flat Pandas DataFrame for analysis.
+
+* **Scalability:** The API request parameters were adjusted (`qopts.per_page: 10000`) to maximize data retrieval per call.
+* **Parsing:** List comprehension was used to extract column names dynamically from the `datatable` > `columns` key, ensuring the DataFrame schema matches the API output perfectly.
+
+```python
+# Code Snippet: JSON to DataFrame
+data = json_data['datatable']['data']
+column_names = [col['name'] for col in json_data['datatable']['columns']]
+df_metric = pd.DataFrame(data, columns=column_names)
+```
+
+### 2. Feature Selection
+The raw dataset contains numerous columns. Based on the project goal—analyzing **Accrued Expenses Turnover** specifically for **Banks** across different **Regions**—the following key features were selected for the final dataset:
+
+| Feature | Relevance to Analysis |
+| :--- | :--- |
+| **`indicator`** | Identifies the specific financial metric. |
+| **`mapcode`** | Used for precise filtering of the "Accrued Expenses" account. |
+| **`amount`** | The numerical value used to calculate the turnover ratio. |
+| **`reportdate`** | Essential for time-series analysis (Trend over time). |
+| **`country`** | Enables the comparative analysis between regions. |
+| **`longname`** | Identifies the specific banking institutions. |
+| **`reporttype`** | Ensures we are comparing consistent timeframes (e.g., Annual vs Quarterly). |
+
+### 3. Data Transformation & Statistical Snapshot
+
+To isolate the relevant financial signal, the dataset was filtered to retain only the records where the indicator is **'Accrued Expenses Turnover'**.
+
+> **Code Filter Applied:**
+> `filtered_df = df_metric[necessary_columns][df_metric['indicator']=='Accrued Expenses Turnover']`
+
+#### 📊 Preliminary Statistical Analysis
+Before visualization, a descriptive statistical analysis (`df.describe()`) was performed to understand the distribution of the Turnover Ratio.
+
+**Key Observations:**
+* **Sample Size:** 139 data points analyzed.
+* **High Variability:** The **Standard Deviation (33.1)** is higher than the **Mean (26.9)**, indicating a massive disparity in operational efficiency between the analyzed companies.
+* **Range:** The values range significantly from a minimum of **4.69** to a maximum of **229.8**, suggesting the presence of high-performing outliers.
+
+| Statistic | Value | Interpretation |
+| :--- | :--- | :--- |
+| **Mean** | 26.91 | Average turnover ratio across the sample. |
+| **Std Dev** | 33.10 | Indicates high volatility in the data. |
+| **Min** | 4.69 | Lower bound of efficiency. |
+| **Max** | 229.81 | Upper bound (potential industry leaders). |
+
+## 📉 Temporal Trend Analysis (2010-2015)
+
+To understand the evolution of financial efficiency, the analysis focused on a specific 5-year window: **2010 to 2015**. This period allows us to observe trends in the banking sector with greater precision.
+
+### 1. Data Preparation
+Before visualization, specific data engineering steps were performed:
+* **Type Conversion:** The `report_date` column was converted to datetime objects to allow for chronological sorting and filtering.
+* **Time Filtering:** A mask was applied to isolate records between 2010 and 2015.
+
+```python
+# Code Snippet: Time Series Filtering
+updated_df['report_date'] = pd.to_datetime(updated_df['report_date'])
+updated_df = updated_df[(updated_df['report_date'].dt.year >= 2010) & 
+                        (updated_df['report_date'].dt.year <= 2015)]
+```
+
+### 2. Visual Insights
+
+
