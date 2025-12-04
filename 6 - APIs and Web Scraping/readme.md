@@ -208,6 +208,54 @@ updated_df = updated_df[(updated_df['report_date'].dt.year >= 2010) &
                         (updated_df['report_date'].dt.year <= 2015)]
 ```
 
-### 2. Visual Insights
+## 2. 📊 Comparative Analysis: Cross-Company Performance
 
+Beyond individual trends, a comparative analysis was performed to benchmark companies against each other. This visualization highlights the disparity in **Accrued Expenses Turnover** across different sectors.
+
+### Visualization Logic
+* **Multi-Line Plot:** All selected companies were plotted on a shared timeline (2011-2016) to allow for direct scale comparison.
+* **Metric:** The Y-axis represents the raw turnover amount, highlighting outliers.
+
+### 🔍 Key Insights from the Data
+The comparative chart reveals significant differences in financial behavior:
+
+![Accrued Expenses Turnover by Company](img/Turnover_by_company.png)
+
+1.  **High Volatility Outliers:**
+    * **Ultrapetrol (Bahamas) Ltd** (Red Line) exhibits extreme volatility, with a massive spike reaching >220 in 2015. This suggests aggressive short-term debt settlement or specific operational events during that year.
+    * **Capri Holdings** also shows a significant deviation from the baseline in 2014.
+
+2.  **Stability in Major Players:**
+    * In contrast, large-cap companies like **Apple Inc**, **Deutsche Bank**, and **Canon Inc** display much lower and flatter turnover ratios (clustered at the bottom).
+    * This indicates a more consistent, perhaps more conservative, approach to managing accrued expenses compared to the more volatile entities.
+
+### 🌍 Regional Case Study: The Bahamas Anomaly
+
+A deeper dive into the geographical data revealed a surprising insight: The **Bahamas** region outperformed major economic hubs like the USA and Germany in terms of average Accrued Expenses Turnover.
+
+### 1. The Observation
+When aggregating data by country, Bahamas emerged as the leader with an average turnover > 65, significantly higher than the USA (~45).
+
+![Average Turnover by Country](img/country_over_time.png)
+
+### 2. Drill-Down: What is driving the Bahamas' numbers?
+To understand this disparity, we isolated the companies within these regions to compare the specific entities driving these averages.
+
+* **USA Analysis:** The region is dominated by giants like **Apple Inc**, which holds a turnover ratio of ~28.
+* **Bahamas Analysis:** The region's average is heavily skewed by **Ultrapetrol (Bahamas) Ltd**, which maintains a ratio significantly higher than 60.
+
+| Region | Key Company | Approx. Ratio | Interpretation |
+| :--- | :--- | :--- | :--- |
+| **USA** 🇺🇸 | Apple Inc | ~28 | Lower turnover suggests massive accrued expenses retained on books, typical of large-cap tech operations with complex supply chains. |
+| **Bahamas** 🇧🇸 | Ultrapetrol | ~66 | Extremely high turnover indicates rapid settlement of short-term liabilities, or a business model (likely Maritime/Transport) with different working capital requirements. |
+
+### 3. Visual Comparison
+The contrast is evident when comparing the specific company distributions:
+
+<div style="display: flex; justify-content: space-between;">
+  <img src="img/US-Companies.png" alt="USA Companies" width="45%" />
+  <img src="img/Bahamas-Companies.png" alt="Bahamas Companies" width="45%" />
+</div>
+
+> **Conclusion:** The high regional average for the Bahamas is not necessarily a sign of broader regional economic superiority, but rather a reflection of specific operational efficiencies within *Ultrapetrol*, acting as a positive outlier against the broader market standard set by companies like Apple.
 
