@@ -1,0 +1,8 @@
+numpy
+pandas
+matplotlib
+seaborn
+pymysql
+sqlalchemy
+ipython-sql
+prettytable<3.12
