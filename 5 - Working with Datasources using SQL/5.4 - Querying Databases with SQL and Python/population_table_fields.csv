@@ -1,0 +1,13 @@
+Indicator,IndicatorName,Unit
+CountryCode,Three Character Country Code,NA
+CountryName,Full Name of the Country,NA
+Year,Year,NA
+Population,"Total Population, as of 1 July",thousands
+PopulationMale,"Male Population, as of 1 July",thousands
+PopulationFemale,"Female Population, as of 1 July",thousands
+PopDensity,"Population Density, as of 1 July",persons per square km
+PopSexRatio,"Population Sex Ratio, as of 1 July",males per 100 females
+MedianAge,"Median Age, as of 1 July",years
+PopChange,Population Change,thousands
+GrowthRate,Population Growth Rate,percentage
+DoublingTime,Population Annual Doubling Time,years
